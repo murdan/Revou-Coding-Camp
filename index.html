@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Button Generator</title>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Dynamic hover styles injected by renderLiveButton() -->
+  <style id="hover-style"></style>
+
+  <style>
+    /* Ensure the live button base style doesn't conflict with Tailwind resets */
+    #live-button {
+      display: inline-block;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen text-gray-900">
+
+  <!-- App Header -->
+  <header class="bg-white border-b border-gray-200 px-6 py-4">
+    <h1 class="text-xl font-semibold text-gray-800">CSS Button Generator</h1>
+    <p class="text-sm text-gray-500 mt-0.5">Kustomisasi button secara visual, salin kodenya.</p>
+  </header>
+
+  <!-- Main Layout: two-panel on lg+, single-column below -->
+  <main class="flex flex-col lg:flex-row min-h-[calc(100vh-73px)]">
+
+    <!-- ================================================================
+         LEFT / TOP — Control Panel
+         Width: fixed 320px on lg+; full-width on smaller viewports
+    ================================================================= -->
+    <aside
+      class="w-full lg:w-80 xl:w-96 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 overflow-y-auto"
+      aria-label="Control Panel"
+    >
+      <div class="p-5 space-y-5">
+
+        <!-- ── Action Buttons ── -->
+        <div class="flex gap-2">
+          <button
+            id="btn-reset"
+            class="flex-1 py-2 px-3 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 transition-colors"
+          >
+            Reset
+          </button>
+          <button
+            id="btn-randomize"
+            class="flex-1 py-2 px-3 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 transition-colors"
+          >
+            Randomize
+          </button>
+        </div>
+
+        <!-- ── Presets ── -->
+        <section aria-labelledby="presets-heading">
+          <h2 id="presets-heading" class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+            Presets
+          </h2>
+          <div class="grid grid-cols-5 gap-1.5">
+            <button
+              id="preset-primary"
+              class="py-1.5 px-1 text-xs font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 transition-colors"
+              aria-label="Apply Primary preset"
+            >Primary</button>
+            <button
+              id="preset-outline"
+              class="py-1.5 px-1 text-xs font-medium rounded-md border-2 border-blue-500 text-blue-600 bg-white hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 transition-colors"
+              aria-label="Apply Outline preset"
+            >Outline</button>
+            <button
+              id="preset-ghost"
+              class="py-1.5 px-1 text-xs font-medium rounded-md text-gray-700 bg-transparent hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 transition-colors"
+              aria-label="Apply Ghost preset"
+            >Ghost</button>
+            <button
+              id="preset-pill"
+              class="py-1.5 px-1 text-xs font-medium rounded-full bg-blue-600 text-white hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 transition-colors"
+              aria-label="Apply Pill preset"
+            >Pill</button>
+            <button
+              id="preset-danger"
+              class="py-1.5 px-1 text-xs font-medium rounded-md bg-red-500 text-white hover:bg-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 transition-colors"
+              aria-label="Apply Danger preset"
+            >Danger</button>
+          </div>
+        </section>
+
+        <hr class="border-gray-200" />
+
+        <!-- ── Text ── -->
+        <section aria-labelledby="section-text">
+          <h2 id="section-text" class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+            Text
+          </h2>
+          <div>
+            <label for="input-text" class="block text-sm font-medium text-gray-700 mb-1">
+              Button Text
+            </label>
+            <input
+              id="input-text"
+              type="text"
+              maxlength="100"
+              value="Click Me"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+              aria-label="Button text content, maximum 100 characters"
+            />
+          </div>
+        </section>
+
+        <hr class="border-gray-200" />
+
+        <!-- ── Typography ── -->
+        <section aria-labelledby="section-typography">
+          <h2 id="section-typography" class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+            Typography
+          </h2>
+          <div class="space-y-4">
+
+            <!-- Font Size -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-font-size" class="text-sm font-medium text-gray-700">Font Size</label>
+                <span id="label-font-size" class="text-sm text-gray-500 tabular-nums">16px</span>
+              </div>
+              <input
+                id="input-font-size"
+                type="range"
+                min="10" max="48" step="1" value="16"
+                class="w-full accent-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded"
+                aria-label="Font size in pixels, range 10 to 48"
+                aria-valuemin="10" aria-valuemax="48" aria-valuenow="16"
+              />
+            </div>
+
+            <!-- Font Weight -->
+            <div>
+              <label for="input-font-weight" class="block text-sm font-medium text-gray-700 mb-1">
+                Font Weight
+              </label>
+              <select
+                id="input-font-weight"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                aria-label="Font weight"
+              >
+                <option value="300">300 — Light</option>
+                <option value="400" selected>400 — Regular</option>
+                <option value="500">500 — Medium</option>
+                <option value="600">600 — Semi Bold</option>
+                <option value="700">700 — Bold</option>
+                <option value="800">800 — Extra Bold</option>
+              </select>
+            </div>
+
+          </div>
+        </section>
+
+        <hr class="border-gray-200" />
+
+        <!-- ── Colors ── -->
+        <section aria-labelledby="section-colors">
+          <h2 id="section-colors" class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+            Colors
+          </h2>
+          <div class="space-y-3">
+
+            <div class="flex items-center justify-between">
+              <label for="input-text-color" class="text-sm font-medium text-gray-700">Text Color</label>
+              <input
+                id="input-text-color"
+                type="color"
+                value="#ffffff"
+                class="w-10 h-8 rounded border border-gray-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                aria-label="Text color picker"
+              />
+            </div>
+
+            <div class="flex items-center justify-between">
+              <label for="input-bg-color" class="text-sm font-medium text-gray-700">Background Color</label>
+              <input
+                id="input-bg-color"
+                type="color"
+                value="#3b82f6"
+                class="w-10 h-8 rounded border border-gray-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                aria-label="Background color picker"
+              />
+            </div>
+
+            <div class="flex items-center justify-between">
+              <label for="input-border-color" class="text-sm font-medium text-gray-700">Border Color</label>
+              <input
+                id="input-border-color"
+                type="color"
+                value="#3b82f6"
+                class="w-10 h-8 rounded border border-gray-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                aria-label="Border color picker"
+              />
+            </div>
+
+          </div>
+        </section>
+
+        <hr class="border-gray-200" />
+
+        <!-- ── Border ── -->
+        <section aria-labelledby="section-border">
+          <h2 id="section-border" class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+            Border
+          </h2>
+          <div class="space-y-4">
+
+            <!-- Border Width -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-border-width" class="text-sm font-medium text-gray-700">Border Width</label>
+                <span id="label-border-width" class="text-sm text-gray-500 tabular-nums">0px</span>
+              </div>
+              <input
+                id="input-border-width"
+                type="range"
+                min="0" max="10" step="1" value="0"
+                class="w-full accent-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded"
+                aria-label="Border width in pixels, range 0 to 10"
+                aria-valuemin="0" aria-valuemax="10" aria-valuenow="0"
+              />
+            </div>
+
+            <!-- Border Radius -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-border-radius" class="text-sm font-medium text-gray-700">Border Radius</label>
+                <span id="label-border-radius" class="text-sm text-gray-500 tabular-nums">8px</span>
+              </div>
+              <input
+                id="input-border-radius"
+                type="range"
+                min="0" max="50" step="1" value="8"
+                class="w-full accent-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded"
+                aria-label="Border radius in pixels, range 0 to 50"
+                aria-valuemin="0" aria-valuemax="50" aria-valuenow="8"
+              />
+            </div>
+
+          </div>
+        </section>
+
+        <hr class="border-gray-200" />
+
+        <!-- ── Spacing ── -->
+        <section aria-labelledby="section-spacing">
+          <h2 id="section-spacing" class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+            Spacing
+          </h2>
+          <div class="space-y-4">
+
+            <!-- Padding Horizontal -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-padding-horizontal" class="text-sm font-medium text-gray-700">Padding Horizontal</label>
+                <span id="label-padding-horizontal" class="text-sm text-gray-500 tabular-nums">24px</span>
+              </div>
+              <input
+                id="input-padding-horizontal"
+                type="range"
+                min="0" max="80" step="1" value="24"
+                class="w-full accent-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded"
+                aria-label="Horizontal padding in pixels, range 0 to 80"
+                aria-valuemin="0" aria-valuemax="80" aria-valuenow="24"
+              />
+            </div>
+
+            <!-- Padding Vertical -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="input-padding-vertical" class="text-sm font-medium text-gray-700">Padding Vertical</label>
+                <span id="label-padding-vertical" class="text-sm text-gray-500 tabular-nums">12px</span>
+              </div>
+              <input
+                id="input-padding-vertical"
+                type="range"
+                min="0" max="60" step="1" value="12"
+                class="w-full accent-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded"
+                aria-label="Vertical padding in pixels, range 0 to 60"
+                aria-valuemin="0" aria-valuemax="60" aria-valuenow="12"
+              />
+            </div>
+
+          </div>
+        </section>
+
+        <hr class="border-gray-200" />
+
+        <!-- ── Shadow ── -->
+        <section aria-labelledby="section-shadow">
+          <h2 id="section-shadow" class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+            Box Shadow
+          </h2>
+          <div class="space-y-3">
+
+            <div>
+              <label for="input-box-shadow" class="block text-sm font-medium text-gray-700 mb-1">
+                Shadow Preset
+              </label>
+              <select
+                id="input-box-shadow"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                aria-label="Box shadow preset"
+              >
+                <option value="none" selected>None</option>
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+
+            <!-- Custom Shadow Controls (hidden by default) -->
+            <div id="custom-shadow-controls" style="display:none;" class="space-y-3 pl-2 border-l-2 border-gray-100">
+
+              <div>
+                <label for="input-shadow-offset-x" class="block text-sm font-medium text-gray-700 mb-1">
+                  Offset X (px)
+                </label>
+                <input
+                  id="input-shadow-offset-x"
+                  type="number"
+                  value="0"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                  aria-label="Shadow horizontal offset in pixels"
+                />
+              </div>
+
+              <div>
+                <label for="input-shadow-offset-y" class="block text-sm font-medium text-gray-700 mb-1">
+                  Offset Y (px)
+                </label>
+                <input
+                  id="input-shadow-offset-y"
+                  type="number"
+                  value="4"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                  aria-label="Shadow vertical offset in pixels"
+                />
+              </div>
+
+              <div>
+                <label for="input-shadow-blur" class="block text-sm font-medium text-gray-700 mb-1">
+                  Blur Radius (px)
+                </label>
+                <input
+                  id="input-shadow-blur"
+                  type="number"
+                  value="6"
+                  min="0"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                  aria-label="Shadow blur radius in pixels"
+                />
+              </div>
+
+              <div>
+                <label for="input-shadow-spread" class="block text-sm font-medium text-gray-700 mb-1">
+                  Spread Radius (px)
+                </label>
+                <input
+                  id="input-shadow-spread"
+                  type="number"
+                  value="0"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                  aria-label="Shadow spread radius in pixels"
+                />
+              </div>
+
+              <div>
+                <label for="input-shadow-color" class="block text-sm font-medium text-gray-700 mb-1">
+                  Shadow Color
+                </label>
+                <input
+                  id="input-shadow-color"
+                  type="color"
+                  value="#000000"
+                  class="w-10 h-8 rounded border border-gray-300 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                  aria-label="Shadow color picker"
+                />
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <hr class="border-gray-200" />
+
+        <!-- ── Hover Effect ── -->
+        <section aria-labelledby="section-hover">
+          <h2 id="section-hover" class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+            Hover Effect
+          </h2>
+          <div>
+            <label for="input-hover-effect" class="block text-sm font-medium text-gray-700 mb-1">
+              Effect Type
+            </label>
+            <select
+              id="input-hover-effect"
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+              aria-label="Hover effect type"
+            >
+              <option value="none" selected>None</option>
+              <option value="darken">Darken (15%)</option>
+              <option value="lighten">Lighten (15%)</option>
+              <option value="scale-up">Scale Up (1.05×)</option>
+              <option value="scale-down">Scale Down (0.95×)</option>
+              <option value="lift">Lift (shadow +1 level)</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- Bottom padding spacer -->
+        <div class="h-4"></div>
+
+      </div>
+    </aside>
+
+    <!-- ================================================================
+         RIGHT / BOTTOM — Preview Panel + Code Output
+    ================================================================= -->
+    <div class="flex-1 flex flex-col min-w-0">
+
+      <!-- Preview Panel -->
+      <section
+        class="flex-1 flex items-center justify-center bg-gray-100 p-8 min-h-48"
+        aria-label="Live Button Preview"
+      >
+        <button
+          id="live-button"
+          class="custom-button"
+          aria-label="Live preview of the configured button"
+        >
+          Click Me
+        </button>
+      </section>
+
+      <!-- Code Output -->
+      <section
+        class="bg-white border-t border-gray-200"
+        aria-label="Generated Code Output"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+
+          <!-- CSS Output -->
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-sm font-semibold text-gray-700">CSS</h2>
+              <button
+                id="copy-css-btn"
+                class="px-3 py-1.5 text-xs font-medium rounded-md bg-gray-900 text-white hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-1 transition-colors"
+                aria-label="Copy CSS code to clipboard"
+              >
+                Copy CSS
+              </button>
+            </div>
+            <pre
+              id="css-output"
+              class="text-xs font-mono bg-gray-50 border border-gray-200 rounded-lg p-3 overflow-x-auto whitespace-pre text-gray-800 min-h-24 max-h-64"
+              aria-label="Generated CSS code"
+              aria-live="polite"
+            ></pre>
+          </div>
+
+          <!-- HTML Output -->
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-sm font-semibold text-gray-700">HTML</h2>
+              <button
+                id="copy-html-btn"
+                class="px-3 py-1.5 text-xs font-medium rounded-md bg-gray-900 text-white hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-1 transition-colors"
+                aria-label="Copy HTML code to clipboard"
+              >
+                Copy HTML
+              </button>
+            </div>
+            <pre
+              id="html-output"
+              class="text-xs font-mono bg-gray-50 border border-gray-200 rounded-lg p-3 overflow-x-auto whitespace-pre text-gray-800 min-h-24 max-h-64"
+              aria-label="Generated HTML code"
+              aria-live="polite"
+            ></pre>
+          </div>
+
+        </div>
+      </section>
+
+    </div><!-- end right column -->
+
+  </main>
+
+  <!-- Bootstrap the application -->
+  <script type="module">
+    import {
+      bindEvents,
+      renderLiveButton,
+      renderCodeOutput,
+      syncControlPanel,
+      DEFAULT_STATE,
+    } from "./button-generator.js";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      bindEvents();
+      renderLiveButton(DEFAULT_STATE);
+      renderCodeOutput();
+      syncControlPanel(DEFAULT_STATE);
+    });
+  </script>
+
+</body>
+</html>
